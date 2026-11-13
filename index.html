@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Little Space 💖</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@500;700&family=Playpen+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            --accent-pink: #ff5e7e;
+
+            /* === PENGATURAN FOTO TENGAH === */
+            --hero-height: 118%;
+            --hero-bottom: -30px;
+            --hero-x: 0px;
+
+            /* === PENGATURAN UKURAN & POSISI POLAROID === */
+            --polaroid-width: 104px;       /* Lebar tiap kartu polaroid */
+            --polaroid-img-height: 108px;  /* Tinggi area foto di dalam polaroid */
+            --polaroid-x: 0px;             /* Geser kiri-kanan (minus = kiri, plus = kanan) */
+            --polaroid-y: 0px;             /* Geser atas-bawah (minus = naik, plus = turun) */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: url('https://i.imgur.com/3ahXdc0.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(30,20,50,0.4), rgba(10,10,20,0.6));
+            z-index: 1;
+        }
+
+        /* Kontainer Partikel Fullscreen */
+        #hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 99;
+        }
+
+        .desktop-container {
+            position: relative;
+            z-index: 2;
+            width: 92%;
+            max-width: 1200px;
+            height: 85vh;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* === LEFT SIDEBAR === */
+        .sidebar {
+            width: 70px;
+            height: 80%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            box-shadow: var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .sidebar-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-btn:hover {
+            background: var(--accent-pink);
+            transform: scale(1.15);
+            box-shadow: 0 0 15px var(--accent-pink);
+        }
+
+        /* === MAIN BOARD === */
+        .main-board {
+            flex-grow: 1;
+            height: 80%;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: var(--glass-shadow);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.15fr;
+            padding: 30px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .keychain {
+            position: absolute;
+            top: -15px;
+            left: 50px;
+            font-size: 2rem;
+            color: #ff3366;
+            animation: swing 3s ease-in-out infinite;
+            transform-origin: top center;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        /* --- SECTION KIRI (Clock & Calendar) --- */
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            z-index: 6;
+        }
+
+        .time-widget {
+            font-family: 'Orbitron', monospace;
+        }
+
+        .time {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .date {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-top: 5px;
+        }
+
+        .calendar {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .calendar h3 {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+            padding-bottom: 5px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
+        .day-label { font-weight: bold; color: var(--accent-pink); }
+        
+        .day {
+            padding: 4px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .day.special-date {
+            background: var(--accent-pink);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 8px var(--accent-pink);
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .day.special-date:hover {
+            transform: scale(1.2);
+        }
+
+        /* --- SECTION TENGAH (Couple Hero Image) --- */
+        .center-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            overflow: visible;
+        }
+
+        .hero-img {
+            position: absolute;
+            bottom: var(--hero-bottom);
+            left: calc(50% + var(--hero-x));
+            transform: translateX(-50%);
+            height: var(--hero-height);
+            width: auto;
+            max-width: none;
+            object-fit: contain;
+            object-position: bottom center;
+            z-index: 5;
+            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.5));
+            transition: transform 0.4s ease;
+        }
+
+        .hero-img:hover {
+            transform: translateX(-50%) scale(1.03);
+        }
+
+        /* --- SECTION KANAN (Greetings, Polaroid & Sunshine Widget) --- */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            align-items: flex-end;
+            z-index: 6;
+        }
+
+        .top-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255, 0.15);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            justify-content: flex-end;
+        }
+
+        .user-badge img {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top center;
+        }
+
+        .greet-box {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        .greet-box h2 {
+            font-family: 'Playpen Sans', cursive;
+            font-size: 1.55rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Wrapper Polaroid + Teks Vertikal agar selalu sejajar */
+        .polaroid-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            transform: translate(var(--polaroid-x), var(--polaroid-y));
+            margin: 8px 0;
+        }
+
+        .vertical-text {
+            position: absolute;
+            left: -24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.72rem;
+            letter-spacing: 3px;
+            writing-mode: vertical-rl;
+            opacity: 0.65;
+            text-transform: uppercase;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* Polaroid Grid */
+        .polaroid-grid {
+            display: flex;
+            gap: 10px;
+            transform: rotate(-1.5deg);
+        }
+
+        .polaroid {
+            background: white;
+            padding: 7px 7px 14px 7px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+            transform: rotate(2deg);
+            transition: 0.3s ease;
+            cursor: pointer;
+            width: var(--polaroid-width);
+            border-radius: 3px;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: var(--polaroid-img-height);
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+        }
+
+        .polaroid p {
+            font-family: 'Playpen Sans', cursive;
+            font-size: 0.62rem;
+            color: #333;
+            text-align: center;
+            margin-top: 6px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .polaroid:nth-child(even) {
+            transform: rotate(-2.5deg);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.12) rotate(0deg) !important;
+            z-index: 10;
+        }
+
+        /* === SUNSHINE RADAR / LOVE METER WIDGET === */
+        .sunshine-widget {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 10px 15px;
+            width: 100%;
+            max-width: 315px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .sun-badge {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            background: rgba(255, 200, 55, 0.18);
+            border: 1px solid rgba(255, 215, 100, 0.35);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            animation: spin 10s linear infinite;
+            cursor: pointer;
+        }
+
+        .radar-info {
+            flex-grow: 1;
+            font-size: 0.74rem;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .radar-title {
+            font-weight: 600;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .radar-status {
+            display: block;
+            font-size: 0.66rem;
+            opacity: 0.8;
+            margin-top: 2px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .radar-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .radar-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .radar-btn:hover {
+            background: var(--accent-pink);
+            transform: scale(1.12);
+        }
+
+        .radar-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* === BOTTOM DOCK === */
+        .dock {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 10px 25px;
+            display: flex;
+            gap: 20px;
+            box-shadow: var(--glass-shadow);
+            z-index: 10;
+        }
+
+        .dock-icon {
+            font-size: 1.6rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dock-icon:hover {
+            transform: translateY(-8px) scale(1.2);
+            color: var(--accent-pink);
+        }
+
+        /* === INTERAKTIF: POPUP MODALS === */
+        .popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.72);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal-content {
+            background: rgba(35, 28, 52, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 28px;
+            width: 90%;
+            max-width: 440px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            transform: scale(0.85);
+            animation: scaleUp 0.25s forwards;
+        }
+
+        .modal-content h3 {
+            font-family: 'Playpen Sans', cursive;
+            margin-bottom: 14px;
+            color: var(--accent-pink);
+            font-size: 1.5rem;
+        }
+
+        .modal-content p {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .close-btn, .action-btn {
+            background: var(--accent-pink);
+            border: none;
+            color: white;
+            padding: 9px 22px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.25s;
+            margin: 4px;
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .close-btn:hover, .action-btn:hover {
+            transform: scale(1.05);
+            background: #ff3c62;
+        }
+
+        /* Galeri Foto Style */
+        .gallery-img {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 16px;
+            border: 3px solid white;
+            margin: 0 auto 12px auto;
+            display: block;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Counter Box Style */
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .counter-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 12px 6px;
+        }
+
+        .counter-box span {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-pink);
+        }
+
+        .counter-box small {
+            font-size: 0.7rem;
+            opacity: 0.85;
+        }
+
+        /* Chat / Mood Pills */
+        .mood-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .chat-reply-box {
+            background: rgba(255, 94, 126, 0.18);
+            border: 1px solid rgba(255, 94, 126, 0.4);
+            border-radius: 15px;
+            padding: 12px;
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            100% { transform: rotate(-5deg); }
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            to { transform: scale(1); }
+        }
+
+        .leaf {
+            position: absolute;
+            top: -40px;
+            opacity: 0;
+            color: pink;
+            pointer-events: none;
+            will-change: transform, opacity;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <div id="hearts-container"></div>
+
+    <div class="desktop-container">
+        
+        <!-- === SIDEBAR === -->
+        <div class="sidebar">
+            <div class="sidebar-btn" onclick="openPopup('Tentang Kita ❤️', 'Website ini kubuat khusus buat kamu untuk merayakan hari-hari indah yang kita lewati bersama. Semoga kamu suka ya sayang!')" title="Tentang Kita">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div class="sidebar-btn" onclick="openPopup('Pesan Rahasia 💌', 'Setiap hari bersamamu adalah hari favoritku. Terima kasih sudah selalu menjadi tawa dan peluk hangat di hidupku. I love you, now and always.')" title="Pesan Rahasia">
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div class="sidebar-btn" onclick="openGallery(0)" title="Galeri Kenangan">
+                <i class="fa-solid fa-image"></i>
+            </div>
+            <div class="sidebar-btn" onclick="burstHearts()" title="Hujan Cinta ✨">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div class="sidebar-btn" onclick="openAnniversaryModal()" title="Kalender & Hitungan Hari">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div class="sidebar-btn" onclick="openPopup('A Little Surprise 🎁', 'Tadaaa! Hadiah paling langka dan edisi terbatas buat Sunshine adalah... AKU! Barang sudah diterima tidak dapat ditukar tambah, no refund, dan garansi ngeselin seumur hidup. Enjoy ya! 😜❤️')" title="Kejutan Spesial">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+        </div>
+
+        <!-- === MAIN BOARD === -->
+        <div class="main-board">
+            
+            <div class="keychain"><i class="fa-solid fa-heart"></i></div>
+
+            <!-- Bagian Kiri: Waktu & Kalender OKTOBER -->
+            <div class="left-section">
+                <div class="time-widget">
+                    <div class="time" id="clock">00:00</div>
+                    <div class="date" id="date-display">loading...</div>
+                </div>
+
+                <div class="calendar">
+                    <h3>Oktober 2026</h3>
+                    <div class="days-grid">
+                        <div class="day-label">S</div><div class="day-label">M</div><div class="day-label">T</div><div class="day-label">W</div><div class="day-label">T</div><div class="day-label">F</div><div class="day-label">S</div>
+                        
+                        <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+                        <div class="day">1</div><div class="day">2</div><div class="day">3</div>
+                        <div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day">10</div>
+                        <div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div><div class="day">16</div><div class="day">17</div>
+                        <div class="day">18</div>
+                        <div class="day">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day">24</div>
+                        <div class="day">25</div><div class="day">26</div><div class="day special-date" onclick="openAnniversaryModal()" title="Tanggal Spesial Kita! ❤️">27</div><div class="day">28</div><div class="day">29</div><div class="day">30</div><div class="day">31</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian Tengah: Foto Utama -->
+            <div class="center-section">
+                <img src="https://i.imgur.com/MByH1Gj.png" alt="Main Couple Photo" class="hero-img">
+            </div>
+
+            <!-- Bagian Kanan: Badge, Polaroid & Sunshine Widget -->
+            <div class="right-section">
+                <div class="top-row">
+                    <div class="user-badge">
+                        <span>Hi Sayang!</span>
+                        <img src="https://i.imgur.com/nfY8E4M.jpeg" alt="Avatar">
+                    </div>
+                    <div class="greet-box">
+                        <h2>Hi Sunshine!!</h2>
+                        <small>Matahari ku!</small>
+                    </div>
+                </div>
+
+                <!-- Wrapper Polaroid + Vertical Text -->
+                <div class="polaroid-wrapper">
+                    <div class="vertical-text">Matahari 1/2 Lingkar</div>
+                    <div class="polaroid-grid">
+                        <div class="polaroid" onclick="openGallery(0)" title="Klik untuk perbesar">
+                            <img src="https://i.imgur.com/KyL2H9n.jpeg" alt="Foto">
+                            <p>My 📸</p>
+                        </div>
+                        <div class="polaroid" onclick="openGallery(1)" title="Klik untuk perbesar">
+                            <img src="https://i.imgur.com/c5REK5M.jpeg" alt="Foto">
+                            <p>Sun 🥰</p>
+                        </div>
+                        <div class="polaroid" onclick="openGallery(2)" title="Klik untuk perbesar">
+                            <img src="https://i.imgur.com/ysv0AJW.jpeg" alt="Foto">
+                            <p>Shine 🤍</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Widget Interaktif Pengganti Pemutar Audio -->
+                <div class="sunshine-widget">
+                    <div class="sun-badge" onclick="sendSunshineLove()" title="Klik untuk kirim cinta">☀️</div>
+                    <div class="radar-info">
+                        <div class="radar-title" id="radar-title">Sunshine Radar ☀️</div>
+                        <span class="radar-status" id="radar-status">Tap tombol ❤️ untuk kirim cinta!</span>
+                    </div>
+                    <div class="radar-controls">
+                        <button class="radar-btn" onclick="nextSunshineStatus()" title="Ganti Status Sunshine">
+                            <i class="fa-solid fa-sparkles"></i><i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                        <button class="radar-btn" onclick="sendSunshineLove()" title="Kirim Cinta & Peluk">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- === BOTTOM DOCK === -->
+        <div class="dock">
+            <i class="fa-brands fa-windows dock-icon" onclick="openLoveReasons()" title="Alasan Aku Sayang Kamu"></i>
+            <i class="fa-solid fa-ticket dock-icon" onclick="openDateIdeas()" title="Acak Ide Date Kita"></i>
+            <i class="fa-solid fa-images dock-icon" onclick="openGallery(0)" title="Buka Galeri Foto"></i>
+            <i class="fa-solid fa-comments dock-icon" onclick="openMoodChat()" title="Kirim Peluk & Mood"></i>
+            <i class="fa-solid fa-gift dock-icon" onclick="openPopup('Kado Buat Kamu 🎁', 'Aku bersyukur banget ada kamu di hidupku. Terimakasih telah menjadi bagian terindah dari setiap ceritaku!')" title="Unboxing Kado!"></i>
+        </div>
+
+    </div>
+
+    <!-- 1. MODAL PESAN STANDAR -->
+    <div class="popup-modal" id="popup" onclick="closeOnBg(event, 'popup')">
+        <div class="modal-content">
+            <h3 id="popup-title">Judul</h3>
+            <p id="popup-text">Isi Pesan</p>
+            <button class="close-btn" onclick="closeModal('popup')">Tutup ✨</button>
+        </div>
+    </div>
+
+    <!-- 2. MODAL GALERI FOTO LIGHTBOX -->
+    <div class="popup-modal" id="gallery-modal" onclick="closeOnBg(event, 'gallery-modal')">
+        <div class="modal-content">
+            <h3 id="gallery-title">Moment #1 📸</h3>
+            <img id="gallery-img" class="gallery-img" src="" alt="Kenangan Kita">
+            <p id="gallery-caption">Catatan kenangan...</p>
+            <div>
+                <button class="action-btn secondary" onclick="changePhoto(-1)">◀ Sebelumnya</button>
+                <button class="action-btn secondary" onclick="changePhoto(1)">Berikutnya ▶</button>
+            </div>
+            <button class="close-btn" style="margin-top: 10px;" onclick="closeModal('gallery-modal')">Tutup Galeri</button>
+        </div>
+    </div>
+
+    <!-- 3. MODAL KALENDER & HITUNGAN HARI -->
+    <div class="popup-modal" id="anniv-modal" onclick="closeOnBg(event, 'anniv-modal')">
+        <div class="modal-content">
+            <h3>Our Special Date 🗓️❤️</h3>
+            <p style="margin-bottom: 6px;">Setiap detik bersamamu selalu berarti:</p>
+            <div class="counter-grid">
+                <div class="counter-box"><span id="days-together">0</span><small>Hari</small></div>
+                <div class="counter-box"><span id="hours-together">0</span><small>Jam</small></div>
+                <div class="counter-box"><span id="mins-together">0</span><small>Menit</small></div>
+            </div>
+            <p style="font-size: 0.85rem; opacity: 0.9;">Ditandai khusus di bulan Oktober karena kamu adalah bagian terbaik dalam hidupku.</p>
+            <button class="close-btn" onclick="closeModal('anniv-modal')">Simpan di Hati 💖</button>
+        </div>
+    </div>
+
+    <!-- 4. MODAL CHAT & KIRIM PELUK VIRTUAL -->
+    <div class="popup-modal" id="chat-modal" onclick="closeOnBg(event, 'chat-modal')">
+        <div class="modal-content">
+            <h3>Little Love Chat 💬</h3>
+            <p style="margin-bottom: 10px;">Lagi ngerasain apa sekarang? Pilih tombol di bawah ya:</p>
+            <div class="mood-options">
+                <button class="action-btn" onclick="sendMood('kangen')">Lagi Kangen 🥺</button>
+                <button class="action-btn" onclick="sendMood('peluk')">Butuh Peluk 🤗</button>
+                <button class="action-btn" onclick="sendMood('capek')">Lagi Capek 😮‍💨</button>
+                <button class="action-btn" onclick="sendMood('jajan')">Kode Pengen Date 🧋</button>
+            </div>
+            <div class="chat-reply-box" id="chat-reply">
+                Pilih salah satu mood kamu di atas, nanti ada pesan balasan spesial dari aku! ✨
+            </div>
+            <button class="close-btn" onclick="closeModal('chat-modal')">Tutup</button>
+        </div>
+    </div>
+
+    <!-- 5. MODAL ALASAN SAYANG KAMU -->
+    <div class="popup-modal" id="reasons-modal" onclick="closeOnBg(event, 'reasons-modal')">
+        <div class="modal-content">
+            <h3>Kenapa Aku Sayang Kamu? 💖</h3>
+            <div class="chat-reply-box" id="reason-text" style="font-size: 0.95rem; font-weight: 500;">
+                Karena senyum kamu selalu berhasil bikin hariku yang berat langsung terasa ringan.
+            </div>
+            <div>
+                <button class="action-btn" onclick="nextReason()">Klik untuk Alasan Lainnya ✨</button>
+                <button class="close-btn" onclick="closeModal('reasons-modal')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. MODAL ACAK IDE DATE KITA -->
+    <div class="popup-modal" id="date-modal" onclick="closeOnBg(event, 'date-modal')">
+        <div class="modal-content">
+            <h3>Next Date Roulette 🎟️☀️</h3>
+            <p style="margin-bottom: 10px; font-size: 0.85rem; opacity: 0.9;">Klik tombol acak di bawah, kalau cocok langsung screenshot dan kirim ke aku!</p>
+            <div class="chat-reply-box" id="date-idea-text" style="font-size: 0.95rem; font-weight: 600;">
+                Kulineran malam cari makanan favorit kamu 🍜✨
+            </div>
+            <div>
+                <button class="action-btn" onclick="rollDateIdea()">Acak Ide Lainnya 🎲</button>
+                <button class="close-btn" onclick="closeModal('date-modal')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- === JAVASCRIPT === -->
+    <script>
+        // 1. Live Clock & Tanggal
+        function updateClock() {
+            const now = new Date();
+            let hours = String(now.getHours()).padStart(2, '0');
+            let minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${hours}:${minutes}`;
+
+            const options = { weekday: 'long', month: 'numeric', day: 'numeric' };
+            document.getElementById('date-display').innerText = now.toLocaleDateString('id-ID', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. Kontrol Dasar Semua Modal
+        function openPopup(title, text) {
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-text').innerText = text;
+            document.getElementById('popup').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function closeOnBg(event, id) {
+            if (event.target.id === id) {
+                closeModal(id);
+            }
+        }
+
+        // 3. Efek Kelopak Cinta Berguguran
+        function createLoveRain() {
+            const container = document.getElementById('hearts-container');
+            const heartSymbols = ['🌸', '💖', '✨', '💕', '❤️'];
+            
+            for (let i = 0; i < 28; i++) {
+                let heart = document.createElement('div');
+                heart.classList.add('leaf');
+                heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 14 + 11) + 'px';
+                const duration = Math.random() * 5 + 6;
+                heart.style.animationDuration = duration + 's';
+                heart.style.animationDelay = -(Math.random() * duration) + 's';
+                container.appendChild(heart);
+            }
+        }
+        createLoveRain();
+
+        function burstHearts() {
+            const container = document.getElementById('hearts-container');
+            const symbols = ['💖', '💕', '🤗', '✨', '❤️'];
+            for (let i = 0; i < 16; i++) {
+                let h = document.createElement('div');
+                h.classList.add('leaf');
+                h.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                h.style.left = (20 + Math.random() * 60) + 'vw';
+                h.style.fontSize = (18 + Math.random() * 14) + 'px';
+                h.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+                h.style.animationDelay = (Math.random() * 0.4) + 's';
+                container.appendChild(h);
+                setTimeout(() => h.remove(), 4500);
+            }
+        }
+
+        // ========================================================
+        // 4. GALERI FOTO INTERAKTIF
+        // ========================================================
+        const galleryItems = [
+            {
+                title: "Moment #1 📸",
+                src: "https://i.imgur.com/KyL2H9n.jpeg",
+                caption: "Sesuai namamu, kamu adalah cahaya paling hangat yang diam-diam selalu berhasil mengusir mendung di hari-hariku."
+            },
+            {
+                title: "Happy Us 🥰",
+                src: "https://i.imgur.com/c5REK5M.jpeg",
+                caption: "Di antara riuhnya dunia yang sering terasa dingin, hadirmu adalah satu-satunya matahari yang selalu kutunggu untuk pulang."
+            },
+            {
+                title: "Forever 🤍",
+                src: "https://i.imgur.com/ysv0AJW.jpeg",
+                caption: "Tidak perlu menunggu pagi untuk melihat sinar yang indah, karena setiap kali kamu tersenyum, semestaku sudah cukup terang."
+            }
+        ];
+        let currentPhotoIdx = 0;
+
+        function openGallery(index) {
+            currentPhotoIdx = index;
+            renderGallery();
+            document.getElementById('gallery-modal').style.display = 'flex';
+        }
+
+        function changePhoto(step) {
+            currentPhotoIdx = (currentPhotoIdx + step + galleryItems.length) % galleryItems.length;
+            renderGallery();
+        }
+
+        function renderGallery() {
+            const item = galleryItems[currentPhotoIdx];
+            document.getElementById('gallery-title').innerText = item.title;
+            document.getElementById('gallery-img').src = item.src;
+            document.getElementById('gallery-caption').innerText = item.caption;
+        }
+
+        // ========================================================
+        // 5. HITUNGAN HARI BERSAMA
+        // ========================================================
+        const specialStartDate = new Date("2025-10-18T00:00:00");
+
+        function openAnniversaryModal() {
+            const now = new Date();
+            const diffMs = Math.max(0, now - specialStartDate);
+            const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diffMs / (1000 * 60)) % 60);
+
+            document.getElementById('days-together').innerText = days;
+            document.getElementById('hours-together').innerText = hours;
+            document.getElementById('mins-together').innerText = mins;
+            document.getElementById('anniv-modal').style.display = 'flex';
+        }
+
+        // ========================================================
+        // 6. MINI CHAT & ALASAN SAYANG KAMU
+        // ========================================================
+        function openMoodChat() {
+            document.getElementById('chat-modal').style.display = 'flex';
+        }
+
+        function sendMood(type) {
+            const replies = {
+                kangen: "Aku juga kangen banget sama kamu! Aku siap nungguin kamu yang kalau mandi di Dubai, Makan di Italia, Ikhlas banget pokoknya aku nungguinnya 💖",
+                peluk: "Peluk virtual terkirim! 🤗 Anggap aja aku lagi ngusap kepala mu, sambil nabok tipis-tipis.",
+                capek: "Istirahat dulu ya sayang, kamu sering ngingetin aku buat istirahat, masa kamu enggak ✨",
+                jajan: "Kode diterima! 🧋 Screenshot layar ini dan kirim ke aku, nanti bawa kamu ke tempat-tempat indah!"
+            };
+            document.getElementById('chat-reply').innerText = replies[type];
+            burstHearts();
+        }
+
+        const loveReasons = [
+            "Karena senyum kamu selalu berhasil bikin hariku yang berat langsung terasa ringan.",
+            "Karena kamu selalu sabar dan ngertiin aku bahkan di saat aku lagi ribet sendiri.",
+            "Karena ngobrol hal random sama kamu pun rasanya selalu seru dan nggak pernah ngebosenin.",
+            "Karena kamu bikin aku pengen jadi versi terbaik dari diriku sendiri setiap hari.",
+            "Karena di dekat kamu, aku ngerasa paling aman dan jadi diriku sendiri."
+        ];
+        let reasonIdx = 0;
+
+        function openLoveReasons() {
+            document.getElementById('reasons-modal').style.display = 'flex';
+        }
+
+        function nextReason() {
+            reasonIdx = (reasonIdx + 1) % loveReasons.length;
+            document.getElementById('reason-text').innerText = loveReasons[reasonIdx];
+            burstHearts();
+        }
+
+        // ========================================================
+        // 7. SUNSHINE RADAR & ACAK IDE DATE
+        // ========================================================
+        let loveCount = 0;
+        const sunshineStatuses = [
+            "Cuaca hati: Cerah maksimal ☀️",
+            "Status: Lagi gemesin banget 🤭",
+            "Kangen level: 999% terdeteksi 💖",
+            "Peringatan: Terlalu manis hari ini ✨",
+            "Mode: Siap diajak bucin kapan aja 🧋"
+        ];
+        let statusIdx = 0;
+
+        function sendSunshineLove() {
+            loveCount++;
+            document.getElementById('radar-title').innerText = `Love Sent: ${loveCount}x 💖`;
+            document.getElementById('radar-status').innerText = "Peluk & sayang terkirim ke Sunshine!";
+            burstHearts();
+        }
+
+        function nextSunshineStatus() {
+            statusIdx = (statusIdx + 1) % sunshineStatuses.length;
+            document.getElementById('radar-status').innerText = sunshineStatuses[statusIdx];
+        }
+
+        const dateIdeas = [
+            "Ngeboren bareng kitaaa",
+            "Isi Galeri kosong nih, diisi fotomu boleh sih",
+            "Nonton film asik kali",
+            "Ketimbang ngang ngong ngang ngong di balkot, mending bucin kita di gta",
+            "Jalan-jalan berkedok kunjungan dinas, asik kali ya"
+        ];
+        let dateIdeaIdx = 0;
+
+        function openDateIdeas() {
+            document.getElementById('date-modal').style.display = 'flex';
+        }
+
+        function rollDateIdea() {
+            dateIdeaIdx = (dateIdeaIdx + 1) % dateIdeas.length;
+            document.getElementById('date-idea-text').innerText = dateIdeas[dateIdeaIdx];
+            burstHearts();
+        }
+    </script>
+</body>
+</html>
